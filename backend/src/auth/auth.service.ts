@@ -37,13 +37,12 @@ export class AuthService {
   async validateUser(input: AuthInput): Promise<SignInData | null> {
     const user = await this.usersService.findUserByName(input.username);
 
-    if (user && user.password === input.password)
-      return {
-        userId: user.userId,
-        username: user.username,
-      };
+    if (!(user && user.password === input.password)) return null;
 
-    return null;
+    return {
+      userId: user.userId,
+      username: user.username,
+    };
   }
 
   async signIn(user: SignInData): Promise<AuthResult> {

@@ -1,12 +1,5 @@
 import { AuthService } from '@/auth/auth.service';
-import {
-  Body,
-  Controller,
-  HttpCode,
-  HttpStatus,
-  NotImplementedException,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
@@ -16,6 +9,5 @@ export class AuthController {
   @Post('login')
   login(@Body() body: { username: string; password: string }) {
     return this.authService.authenticate(body);
-    // throw new NotImplementedException('Method not implemented');
   }
 }
