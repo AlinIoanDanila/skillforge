@@ -4,12 +4,6 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import type * as PrismaType from 'generated/prisma/client';
 
-// export type User = {
-//   userId: number;
-//   username: string;
-//   password: string;
-// };
-
 type User = PrismaType.User;
 
 @Injectable()

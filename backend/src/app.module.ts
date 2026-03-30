@@ -7,6 +7,7 @@ import { AppController } from '@/app.controller';
 import { UsersModule } from '@/users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
+import { ProjectsModule } from './projects/projects.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { PrismaService } from './prisma/prisma.service';
     UsersModule,
     PrismaModule,
     ConfigModule.forRoot({ isGlobal: true }),
+    ProjectsModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
