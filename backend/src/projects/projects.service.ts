@@ -1,38 +1,45 @@
 import {
   Injectable,
   InternalServerErrorException,
+  NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
 
+import { TasksService } from '@/tasks/tasks.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import type * as PrismaType from 'generated/prisma/client';
 
 @Injectable()
 export class ProjectsService {
-  constructor(private prismaSerice: PrismaService) {}
+  constructor(
+    private prismaService: PrismaService,
+    private tasksService: TasksService,
+  ) {}
 
   async getProject(id: string): Promise<PrismaType.Project> {
     try {
-      const project = await this.prismaSerice.project.findUnique({
+      const project = await this.prismaService.project.findUnique({
         where: { id: id },
       });
 
-      if (!project) throw new NotFoundException();
+      if (!project) throw new NotFoundException('Project not found');
 
       return project;
     } catch (error) {
-      throw new Error(error);
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Failed to fetch Project');
     }
   }
 
   async getAllProjects(userId: string): Promise<PrismaType.Project[]> {
     try {
-      const projects = await this.prismaSerice.project.findMany({
+      const projects = await this.prismaService.project.findMany({
         where: { userId },
       });
+
       return projects;
     } catch (error) {
-      throw new Error(error);
+      throw new InternalServerErrorException('Failed to fetch Projects');
     }
   }
 
@@ -42,9 +49,9 @@ export class ProjectsService {
   ): Promise<PrismaType.Project> {
     try {
       const project = body['project'];
-      if (!project || !userId) throw new InternalServerErrorException();
+      if (!project || !userId) throw new NotAcceptableException();
 
-      const newProject = await this.prismaSerice.project.create({
+      const newProject = await this.prismaService.project.create({
         data: {
           title: project.title,
           content: project.content,
@@ -54,17 +61,19 @@ export class ProjectsService {
 
       return newProject;
     } catch (error) {
-      throw new Error(error);
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Failed to fetch Projects');
     }
   }
 
-  async updateProject(body, userId: string): Promise<PrismaType.Project> {
+  async updateProject(body, projectId: string): Promise<PrismaType.Project> {
     try {
       const { title, content } = body;
-      if (!title || !content) throw new Error('No data provided');
+      if (!title || !content)
+        throw new NotAcceptableException('No data provided');
 
-      const project = await this.prismaSerice.project.update({
-        where: { id: userId },
+      const project = await this.prismaService.project.update({
+        where: { id: projectId },
         data: {
           title: title,
           content: content,
@@ -73,19 +82,41 @@ export class ProjectsService {
 
       return project;
     } catch (error) {
-      throw new Error(error);
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Failed to fetch Projects');
     }
   }
 
-  async deleteProject(userId: string): Promise<PrismaType.Project> {
+  async deleteProject(projectId: string): Promise<PrismaType.Project> {
     try {
-      const project = await this.prismaSerice.project.delete({
-        where: { id: userId },
+      const project = await this.prismaService.project.delete({
+        where: { id: projectId },
       });
 
       return project;
     } catch (error) {
-      throw new Error(error);
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Failed to fetch Projects');
+    }
+  }
+
+  async getProjectTasks(projectId: string): Promise<PrismaType.Task[]> {
+    try {
+      const tasks = await this.tasksService.findAll(projectId);
+
+      return tasks;
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Failed to fetch Projects');
+    }
+  }
+
+  async createProjectTask(projectId: string, body): Promise<PrismaType.Task> {
+    try {
+      return await this.tasksService.createTask(projectId, body);
+    } catch (error) {
+      if (error instanceof NotFoundException) throw error;
+      throw new InternalServerErrorException('Failed to fetch Projects');
     }
   }
 }

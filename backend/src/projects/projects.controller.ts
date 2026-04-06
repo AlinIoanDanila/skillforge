@@ -22,8 +22,8 @@ export class ProjectsController {
 
   @HttpCode(HttpStatus.OK)
   @Get(':id')
-  getProject(@Param('id') id: string) {
-    return this.projectsService.getProject(id);
+  getProject(@Param('id') projectId: string) {
+    return this.projectsService.getProject(projectId);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -43,13 +43,31 @@ export class ProjectsController {
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Patch(':id')
-  updateProject(@Param('id') id: string, @Body() body: ParameterDecorator) {
-    return this.projectsService.updateProject(body, id);
+  updateProject(
+    @Param('id') projectId: string,
+    @Body() body: ParameterDecorator,
+  ) {
+    return this.projectsService.updateProject(body, projectId);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Delete(':id')
-  deleteProject(@Param('id') id: string) {
-    return this.projectsService.deleteProject(id);
+  deleteProject(@Param('id') projectId: string) {
+    return this.projectsService.deleteProject(projectId);
+  }
+
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Get(':id/tasks')
+  getProjectTasks(@Param('id') projectId: string) {
+    return this.projectsService.getProjectTasks(projectId);
+  }
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post(':id/tasks')
+  createProjectTasks(
+    @Param('id') projectId: string,
+    @Body() body: ParameterDecorator,
+  ) {
+    return this.projectsService.createProjectTask(projectId, body);
   }
 }
