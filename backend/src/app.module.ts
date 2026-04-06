@@ -9,6 +9,7 @@ import { UsersModule } from '@/users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { PrismaService } from './prisma/prisma.service';
 import { ProjectsModule } from './projects/projects.module';
+import { NotesModule } from './notes/notes.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ProjectsModule } from './projects/projects.module';
     ConfigModule.forRoot({ isGlobal: true }),
     ProjectsModule,
     TasksModule,
+    NotesModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
