@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
+    // "ignoreDeprecations": "6.0",
     "module": "Node16",
     "moduleResolution": "node16",
     "esModuleInterop": true,
@@ -14,6 +14,7 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": ".",
+    "strict": true,
     "paths": {
       "@/*": ["src/*"]
     },

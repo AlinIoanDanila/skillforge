@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateNoteDto } from './dto/create-note.dto';
-import { UpdateNoteDto } from './dto/update-note.dto';
 import { PrismaService } from '@/prisma/prisma.service';
+
+import { CreateNoteDto } from '@myproject/api-types';
 
 @Injectable()
 export class NotesService {
@@ -15,13 +15,11 @@ export class NotesService {
     return notes;
   }
 
-  async createNote(taskId: string, createNoteDto: ParameterDecorator) {
-    const noteDto = createNoteDto['note'];
-
+  async createNote(taskId: string, createNoteDto: CreateNoteDto) {
     const newNote = await this.prismaService.note.create({
       data: {
-        title: noteDto.title,
-        content: noteDto.content,
+        title: createNoteDto.title,
+        content: createNoteDto.content,
         taskId,
       },
     });

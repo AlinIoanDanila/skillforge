@@ -6,8 +6,6 @@ import {
   NotAcceptableException,
 } from '@nestjs/common';
 
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 
 import type * as PrismaType from 'generated/prisma/client';
