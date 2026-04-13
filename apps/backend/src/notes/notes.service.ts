@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 
-import { CreateNoteDto } from '@myproject/api-types';
+import { CreateNoteDto } from '@myproject/api-types/notes';
 
 @Injectable()
 export class NotesService {
@@ -15,15 +15,28 @@ export class NotesService {
     return notes;
   }
 
-  async createNote(taskId: string, createNoteDto: CreateNoteDto) {
-    const newNote = await this.prismaService.note.create({
+  async createNote(
+    userId: string,
+    projectId: string,
+    taskId: string,
+    createNoteDto: CreateNoteDto,
+  ): Promise<CreateNoteDto> {
+    const task = await this.prismaService.task.findFirst({
+      where: {
+        id: taskId,
+        projectId: projectId,
+        project: { userId: userId },
+      },
+    });
+
+    if (!task) throw new NotFoundException('Task not found');
+
+    return await this.prismaService.note.create({
       data: {
         title: createNoteDto.title,
         content: createNoteDto.content,
         taskId,
       },
     });
-
-    return newNote;
   }
 }

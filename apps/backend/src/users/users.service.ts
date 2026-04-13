@@ -36,7 +36,7 @@ export class UsersService {
   ): Promise<User> {
     const hashedPassword = await this.hashPassword(password);
 
-    const user = this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         name: name,
         email: email,

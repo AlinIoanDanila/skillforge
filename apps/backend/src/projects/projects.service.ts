@@ -16,10 +16,13 @@ export class ProjectsService {
     private tasksService: TasksService,
   ) {}
 
-  async getProject(id: string): Promise<PrismaType.Project> {
+  async getProject(
+    userId: string,
+    projectId: string,
+  ): Promise<PrismaType.Project> {
     try {
-      const project = await this.prismaService.project.findUnique({
-        where: { id: id },
+      const project = await this.prismaService.project.findFirst({
+        where: { id: projectId, userId: userId },
       });
 
       if (!project) throw new NotFoundException('Project not found');
@@ -66,14 +69,18 @@ export class ProjectsService {
     }
   }
 
-  async updateProject(body, projectId: string): Promise<PrismaType.Project> {
+  async updateProject(
+    userId: string,
+    projectId: string,
+    body: ParameterDecorator,
+  ): Promise<PrismaType.Project> {
     try {
-      const { title, content } = body;
+      const { title, content } = body['project'];
       if (!title || !content)
         throw new NotAcceptableException('No data provided');
 
       const project = await this.prismaService.project.update({
-        where: { id: projectId },
+        where: { id: projectId, userId },
         data: {
           title: title,
           content: content,
@@ -87,10 +94,13 @@ export class ProjectsService {
     }
   }
 
-  async deleteProject(projectId: string): Promise<PrismaType.Project> {
+  async deleteProject(
+    userId: string,
+    projectId: string,
+  ): Promise<PrismaType.Project> {
     try {
       const project = await this.prismaService.project.delete({
-        where: { id: projectId },
+        where: { id: projectId, userId },
       });
 
       return project;

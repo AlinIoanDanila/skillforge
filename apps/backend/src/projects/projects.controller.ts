@@ -12,7 +12,7 @@ import {
   Delete,
 } from '@nestjs/common';
 
-import { AuthGuard } from '@/auth/guards/auth.guard';
+import { AuthGuard } from '@/guards/auth.guard';
 import { ProjectsService } from '@/projects/projects.service';
 
 @UseGuards(AuthGuard)
@@ -22,8 +22,12 @@ export class ProjectsController {
 
   @HttpCode(HttpStatus.OK)
   @Get(':id')
-  getProject(@Param('id') projectId: string) {
-    return this.projectsService.getProject(projectId);
+  getProject(
+    @Request() req: ParameterDecorator,
+    @Param('id') projectId: string,
+  ) {
+    const userId = req['user'].userId;
+    return this.projectsService.getProject(userId, projectId);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -45,26 +49,39 @@ export class ProjectsController {
   @Patch(':id')
   updateProject(
     @Param('id') projectId: string,
+    @Request() req: ParameterDecorator,
     @Body() body: ParameterDecorator,
   ) {
-    return this.projectsService.updateProject(body, projectId);
+    return this.projectsService.updateProject(
+      req['user'].userId,
+      projectId,
+      body,
+    );
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Delete(':id')
-  deleteProject(@Param('id') projectId: string) {
-    return this.projectsService.deleteProject(projectId);
+  deleteProject(
+    @Request() req: ParameterDecorator,
+    @Param('id') projectId: string,
+  ) {
+    return this.projectsService.deleteProject(req['user'].userId, projectId);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Get(':id/tasks')
-  getProjectTasks(@Param('id') projectId: string) {
+  getProjectTasks(
+    @Request() req: ParameterDecorator,
+    @Param('id') projectId: string,
+  ) {
     return this.projectsService.getProjectTasks(projectId);
   }
 
   @HttpCode(HttpStatus.CREATED)
   @Post(':id/tasks')
   createProjectTasks(
+    @Request() req: ParameterDecorator,
+
     @Param('id') projectId: string,
     @Body() body: ParameterDecorator,
   ) {
