@@ -2,5 +2,19 @@
   "name": "@myproject/api-types",
   "version": "1.0.0",
   "main": "./src/index.ts",
-  "types": "./src/index.ts"
+  "types": "./src/index.ts",
+  "exports": {
+    "./notes": {
+      "types": "./src/notes.ts",
+      "import": "./src/notes.ts",
+      "require": "./src/notes.ts",
+      "default": "./src/notes.ts"
+    },
+    "./users": {
+      "types": "./src/users.ts",
+      "import": "./src/users.ts",
+      "require": "./src/users.ts",
+      "default": "./src/users.ts"
+    }
+  }
 }

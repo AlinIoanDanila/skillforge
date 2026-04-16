@@ -1,17 +1,13 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  UseGuards,
-  Request,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 
 import { AuthService } from '@/auth/auth.service';
-import { AuthGuard } from '@/guards/auth.guard';
 import { UsersService } from '@/users/users.service';
+import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
+
+import {
+  CreateUserSchema,
+  type CreateUserDto,
+} from '@myproject/api-types/users';
 
 @Controller('auth')
 export class AuthController {
@@ -22,8 +18,10 @@ export class AuthController {
 
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
-  registerNewUser(@Request() request) {
-    const { name, email, password, type } = request.body;
+  createNewUser(
+    @Body(new ZodValidationPipe(CreateUserSchema)) dto: CreateUserDto,
+  ) {
+    const { name, email, password, type } = dto;
     return this.usersService.createUser(name, email, password, type);
   }
 
@@ -31,12 +29,5 @@ export class AuthController {
   @Post('login')
   login(@Body() body: { username: string; password: string }) {
     return this.authService.authenticate(body);
-  }
-
-  @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.OK)
-  @Get('profile')
-  getUserInfo(@Request() req) {
-    return req.user;
   }
 }

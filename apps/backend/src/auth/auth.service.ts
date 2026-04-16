@@ -1,10 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 import { UsersService } from '@/users/users.service';
 
@@ -34,7 +30,8 @@ export class AuthService {
   async authenticate(input: AuthInput): Promise<AuthResult> {
     const user = await this.validateUser(input);
 
-    if (!user) throw new UnauthorizedException();
+    if (!user)
+      throw new UnauthorizedException('Incorrect username or password');
 
     return this.signIn(user);
   }
@@ -42,7 +39,8 @@ export class AuthService {
   async validateUser(input: AuthInput): Promise<SignInData | null> {
     const user = await this.usersService.findUserByName(input.username);
 
-    if (!user) throw new NotFoundException();
+    if (!user)
+      throw new UnauthorizedException('Incorrect username or password');
 
     if (!user.hashedPassword) return null;
 
@@ -51,7 +49,8 @@ export class AuthService {
       user.hashedPassword,
     );
 
-    if (!isPasswordCorrect) throw new UnauthorizedException();
+    if (!isPasswordCorrect)
+      throw new UnauthorizedException('Incorrect username or password');
 
     return {
       userId: user.id,

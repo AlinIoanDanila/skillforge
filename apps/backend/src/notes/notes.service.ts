@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 
-import { CreateNoteDto } from '@myproject/api-types/notes';
+import type { CreateNoteDto } from '@myproject/api-types/notes';
 
 @Injectable()
 export class NotesService {

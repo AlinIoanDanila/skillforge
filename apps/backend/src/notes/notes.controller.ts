@@ -12,7 +12,7 @@ import {
 
 import { AuthGuard } from '@/guards/auth.guard';
 import { NotesService } from '@/notes/notes.service';
-import { CreateNoteSchema } from '@myproject/api-types';
+import { CreateNoteSchema } from '@myproject/api-types/notes';
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
 
 import type { CreateNoteDto } from '@myproject/api-types/notes';
