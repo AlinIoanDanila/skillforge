@@ -16,6 +16,7 @@ import { CreateNoteSchema } from '@myproject/api-types/notes';
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
 
 import type { CreateNoteDto } from '@myproject/api-types/notes';
+import { CurrentUser, type ICurrentUser } from '@/decorators/user.decorator';
 
 @UseGuards(AuthGuard)
 @Controller('projects/:projectId/tasks/:taskId/notes')
@@ -33,12 +34,12 @@ export class NotesController {
 
   @Post()
   createNote(
-    @Request() req: ParameterDecorator,
+    @CurrentUser() user: ICurrentUser,
     @Param('projectId') projectId: string,
     @Param('taskId') taskId: string,
     @Body(new ZodValidationPipe(CreateNoteSchema)) dto: CreateNoteDto,
   ) {
-    const userId = req['user'].userId;
+    const userId = user.userId;
     return this.notesService.createNote(userId, projectId, taskId, dto);
   }
 }

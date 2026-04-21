@@ -6,7 +6,6 @@ import {
   HttpStatus,
   Patch,
   Post,
-  Request,
   UseGuards,
   Param,
   Delete,
@@ -14,6 +13,7 @@ import {
 
 import { AuthGuard } from '@/guards/auth.guard';
 import { ProjectsService } from '@/projects/projects.service';
+import { CurrentUser, type ICurrentUser } from '@/decorators/user.decorator';
 
 @UseGuards(AuthGuard)
 @Controller('projects')
@@ -23,65 +23,56 @@ export class ProjectsController {
   @HttpCode(HttpStatus.OK)
   @Get(':id')
   getProject(
-    @Request() req: ParameterDecorator,
+    @CurrentUser() user: ICurrentUser,
     @Param('id') projectId: string,
   ) {
-    const userId = req['user'].userId;
+    const userId = user.userId;
     return this.projectsService.getProject(userId, projectId);
   }
 
   @HttpCode(HttpStatus.OK)
   @Get()
-  getAllProjects(@Request() req: ParameterDecorator) {
-    return this.projectsService.getAllProjects(req['user'].userId);
+  getAllProjects(@CurrentUser() user: ICurrentUser) {
+    return this.projectsService.getAllProjects(user.userId);
   }
 
   @HttpCode(HttpStatus.CREATED)
   @Post()
   createProject(
     @Body() body: ParameterDecorator,
-    @Request() req: ParameterDecorator,
+    @CurrentUser() user: ICurrentUser,
   ) {
-    return this.projectsService.createProject(body, req['user'].userId);
+    return this.projectsService.createProject(body, user.userId);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Patch(':id')
   updateProject(
     @Param('id') projectId: string,
-    @Request() req: ParameterDecorator,
+    @CurrentUser() user: ICurrentUser,
     @Body() body: ParameterDecorator,
   ) {
-    return this.projectsService.updateProject(
-      req['user'].userId,
-      projectId,
-      body,
-    );
+    return this.projectsService.updateProject(user.userId, projectId, body);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Delete(':id')
   deleteProject(
-    @Request() req: ParameterDecorator,
+    @CurrentUser() user: ICurrentUser,
     @Param('id') projectId: string,
   ) {
-    return this.projectsService.deleteProject(req['user'].userId, projectId);
+    return this.projectsService.deleteProject(user.userId, projectId);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Get(':id/tasks')
-  getProjectTasks(
-    @Request() req: ParameterDecorator,
-    @Param('id') projectId: string,
-  ) {
+  getProjectTasks(@Param('id') projectId: string) {
     return this.projectsService.getProjectTasks(projectId);
   }
 
   @HttpCode(HttpStatus.CREATED)
   @Post(':id/tasks')
   createProjectTasks(
-    @Request() req: ParameterDecorator,
-
     @Param('id') projectId: string,
     @Body() body: ParameterDecorator,
   ) {
