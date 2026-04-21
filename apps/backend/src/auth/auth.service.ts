@@ -39,10 +39,8 @@ export class AuthService {
   async validateUser(input: AuthInput): Promise<SignInData | null> {
     const user = await this.usersService.findUserByName(input.username);
 
-    if (!user)
+    if (!user || !user.hashedPassword)
       throw new UnauthorizedException('Incorrect username or password');
-
-    if (!user.hashedPassword) return null;
 
     const isPasswordCorrect = await bcrypt.compare(
       input.password,

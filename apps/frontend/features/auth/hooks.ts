@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { loginRequest } from "@/features/auth/api";
 
 export const useLogin = () => {
+  const router = useRouter();
+
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
@@ -11,7 +14,9 @@ export const useLogin = () => {
     try {
       setLoading(true);
       setError("");
-      const data = await loginRequest(payload);
+      await loginRequest(payload);
+
+      router.push("/dashboard");
     } catch (error) {
       setError("Invalid credentials");
     } finally {
