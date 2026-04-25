@@ -8,6 +8,10 @@ import {
 import { TasksService } from '@/tasks/tasks.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import type * as PrismaType from 'generated/prisma/client';
+import {
+  CreateProjectDto,
+  type UpdateProjectDto,
+} from '@myproject/api-types/projects';
 
 @Injectable()
 export class ProjectsService {
@@ -47,11 +51,11 @@ export class ProjectsService {
   }
 
   async createProject(
-    body: ParameterDecorator,
+    dto: CreateProjectDto,
     userId: string,
   ): Promise<PrismaType.Project> {
     try {
-      const project = body['project'];
+      const project = dto.project;
       if (!project || !userId) throw new NotAcceptableException();
 
       const newProject = await this.prismaService.project.create({
@@ -72,10 +76,10 @@ export class ProjectsService {
   async updateProject(
     userId: string,
     projectId: string,
-    body: ParameterDecorator,
+    dto: UpdateProjectDto,
   ): Promise<PrismaType.Project> {
     try {
-      const { title, content } = body['project'];
+      const { title, content } = dto.project;
       if (!title || !content)
         throw new NotAcceptableException('No data provided');
 

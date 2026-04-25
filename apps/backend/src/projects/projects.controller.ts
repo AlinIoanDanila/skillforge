@@ -13,7 +13,17 @@ import {
 
 import { AuthGuard } from '@/guards/auth.guard';
 import { ProjectsService } from '@/projects/projects.service';
+import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
 import { CurrentUser, type ICurrentUser } from '@/decorators/user.decorator';
+import {
+  UpdateProjectSchema,
+  CreateProjectSchema,
+} from '@myproject/api-types/projects';
+
+import {
+  type UpdateProjectDto,
+  type CreateProjectDto,
+} from '@myproject/api-types/projects';
 
 @UseGuards(AuthGuard)
 @Controller('projects')
@@ -39,10 +49,10 @@ export class ProjectsController {
   @HttpCode(HttpStatus.CREATED)
   @Post()
   createProject(
-    @Body() body: ParameterDecorator,
+    @Body(new ZodValidationPipe(CreateProjectSchema)) dto: CreateProjectDto,
     @CurrentUser() user: ICurrentUser,
   ) {
-    return this.projectsService.createProject(body, user.userId);
+    return this.projectsService.createProject(dto, user.userId);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
@@ -50,9 +60,9 @@ export class ProjectsController {
   updateProject(
     @Param('id') projectId: string,
     @CurrentUser() user: ICurrentUser,
-    @Body() body: ParameterDecorator,
+    @Body(new ZodValidationPipe(UpdateProjectSchema)) dto: UpdateProjectDto,
   ) {
-    return this.projectsService.updateProject(user.userId, projectId, body);
+    return this.projectsService.updateProject(user.userId, projectId, dto);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)

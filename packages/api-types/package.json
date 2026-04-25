@@ -15,6 +15,12 @@
       "import": "./src/users.ts",
       "require": "./src/users.ts",
       "default": "./src/users.ts"
+    },
+    "./projects": {
+      "types": "./src/projects.ts",
+      "import": "./src/projects.ts",
+      "require": "./src/projects.ts",
+      "default": "./src/projects.ts"
     }
   }
 }
