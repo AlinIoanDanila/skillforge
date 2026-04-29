@@ -4,12 +4,6 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
-    "./notes": {
-      "types": "./src/notes.ts",
-      "import": "./src/notes.ts",
-      "require": "./src/notes.ts",
-      "default": "./src/notes.ts"
-    },
     "./users": {
       "types": "./src/users.ts",
       "import": "./src/users.ts",
@@ -21,6 +15,18 @@
       "import": "./src/projects.ts",
       "require": "./src/projects.ts",
       "default": "./src/projects.ts"
+    },
+    "./tasks": {
+      "types": "./src/tasks.ts",
+      "import": "./src/tasks.ts",
+      "require": "./src/tasks.ts",
+      "default": "./src/tasks.ts"
+    },
+    "./notes": {
+      "types": "./src/notes.ts",
+      "import": "./src/notes.ts",
+      "require": "./src/notes.ts",
+      "default": "./src/notes.ts"
     }
   }
 }

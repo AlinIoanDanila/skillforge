@@ -7,4 +7,10 @@ export const CreateUserSchema = z.object({
   type: z.enum(["Admin", "User"]).default("User"),
 });
 
+export const LoginSchema = z.object({
+  username: z.string(),
+  password: z.string(),
+});
+
 export type CreateUserDto = z.infer<typeof CreateUserSchema>;
+export type LoginDto = z.infer<typeof LoginSchema>;

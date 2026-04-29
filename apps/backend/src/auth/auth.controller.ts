@@ -14,6 +14,8 @@ import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
 
 import {
   CreateUserSchema,
+  LoginSchema,
+  type LoginDto,
   type CreateUserDto,
 } from '@myproject/api-types/users';
 
@@ -36,10 +38,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(
-    @Body() body: { username: string; password: string },
+    @Body(new ZodValidationPipe(LoginSchema)) dto: LoginDto,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const { accessToken } = await this.authService.authenticate(body);
+    const { accessToken } = await this.authService.authenticate(dto);
 
     response.cookie('access_token', accessToken, {
       httpOnly: true,

@@ -9,9 +9,10 @@ import { TasksService } from '@/tasks/tasks.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import type * as PrismaType from 'generated/prisma/client';
 import {
-  CreateProjectDto,
+  type CreateProjectDto,
   type UpdateProjectDto,
 } from '@myproject/api-types/projects';
+import { CreateTaskDto } from '@myproject/api-types/tasks';
 
 @Injectable()
 export class ProjectsService {
@@ -56,7 +57,6 @@ export class ProjectsService {
   ): Promise<PrismaType.Project> {
     try {
       const project = dto.project;
-      if (!project || !userId) throw new NotAcceptableException();
 
       const newProject = await this.prismaService.project.create({
         data: {
@@ -80,8 +80,6 @@ export class ProjectsService {
   ): Promise<PrismaType.Project> {
     try {
       const { title, content } = dto.project;
-      if (!title || !content)
-        throw new NotAcceptableException('No data provided');
 
       const project = await this.prismaService.project.update({
         where: { id: projectId, userId },
@@ -125,9 +123,12 @@ export class ProjectsService {
     }
   }
 
-  async createProjectTask(projectId: string, body): Promise<PrismaType.Task> {
+  async createProjectTask(
+    projectId: string,
+    dto: CreateTaskDto,
+  ): Promise<PrismaType.Task> {
     try {
-      return await this.tasksService.createTask(projectId, body);
+      return await this.tasksService.createTask(projectId, dto);
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException('Failed to fetch Projects');

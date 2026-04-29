@@ -21,6 +21,11 @@ import {
 } from '@myproject/api-types/projects';
 
 import {
+  CreateTaskSchema,
+  type CreateTaskDto,
+} from '@myproject/api-types/tasks';
+
+import {
   type UpdateProjectDto,
   type CreateProjectDto,
 } from '@myproject/api-types/projects';
@@ -84,8 +89,8 @@ export class ProjectsController {
   @Post(':id/tasks')
   createProjectTasks(
     @Param('id') projectId: string,
-    @Body() body: ParameterDecorator,
+    @Body(new ZodValidationPipe(CreateTaskSchema)) dto: CreateTaskDto,
   ) {
-    return this.projectsService.createProjectTask(projectId, body);
+    return this.projectsService.createProjectTask(projectId, dto);
   }
 }

@@ -8,15 +8,17 @@ import {
 import { PrismaService } from '@/prisma/prisma.service';
 
 import type * as PrismaType from 'generated/prisma/client';
+import { CreateTaskDto, UpdateTaskDto } from '@myproject/api-types/tasks';
 
 @Injectable()
 export class TasksService {
   constructor(private prismaService: PrismaService) {}
 
-  async createTask(projectId: string, body): Promise<PrismaType.Task> {
-    const taskData = body['task'];
-
-    if (!taskData || !projectId) throw new NotAcceptableException();
+  async createTask(
+    projectId: string,
+    dto: CreateTaskDto,
+  ): Promise<PrismaType.Task> {
+    const taskData = dto.task;
 
     const newTask = await this.prismaService.task.create({
       data: {
@@ -44,20 +46,12 @@ export class TasksService {
     }
   }
 
-  // findOne(id: number) {
-  //   throw new NotImplementedException();
-
-  //   return `This action returns a #${id} task`;
-  // }
-
   async updateTask(
     taskId: string,
-    body: ParameterDecorator,
+    dto: UpdateTaskDto,
   ): Promise<PrismaType.Task> {
     try {
-      if (!taskId || !body['task'])
-        throw new NotAcceptableException('data or id not provided');
-      const taskData = body['task'];
+      const taskData = dto.task;
 
       const updatedTask = await this.prismaService.task.update({
         where: {
