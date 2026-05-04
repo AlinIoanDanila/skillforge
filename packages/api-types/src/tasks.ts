@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-export const CreateTaskSchema = z.object({
+export const TaskCreateSchema = z.object({
   task: z.object({
     title: z.string().min(5, "Title must be at least 5 characters"),
     content: z.string().default("Empty description"),
   }),
 });
 
-export const UpdateTaskSchema = z.object({
+export const TaskUpdateSchema = z.object({
   task: z
     .object({
       title: z.string().trim().min(1).max(50).optional(),
@@ -19,5 +19,5 @@ export const UpdateTaskSchema = z.object({
     }),
 });
 
-export type CreateTaskDto = z.infer<typeof CreateTaskSchema>;
-export type UpdateTaskDto = z.infer<typeof UpdateTaskSchema>;
+export type TaskCreateDto = z.infer<typeof TaskCreateSchema>;
+export type TaskUpdateDto = z.infer<typeof TaskUpdateSchema>;

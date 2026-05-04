@@ -1,13 +1,15 @@
 import { z } from "zod";
 
-export const CreateProjectSchema = z.object({
+export const ProjectCreateSchema = z.object({
   project: z.object({
     title: z.string().trim().min(1).max(100),
     content: z.string().trim().min(1).max(5000),
   }),
 });
 
-export const UpdateProjectSchema = z.object({
+export type ProjectCreateDto = z.infer<typeof ProjectCreateSchema>;
+
+export const ProjectUpdateSchema = z.object({
   project: z
     .object({
       title: z.string().trim().min(1).max(100).optional(),
@@ -18,5 +20,16 @@ export const UpdateProjectSchema = z.object({
     }),
 });
 
-export type CreateProjectDto = z.infer<typeof CreateProjectSchema>;
-export type UpdateProjectDto = z.infer<typeof UpdateProjectSchema>;
+export type ProjectUpdateDto = z.infer<typeof ProjectUpdateSchema>;
+
+export const ProjectIdParamsSchema = z.object({
+  id: z.uuid(),
+});
+
+export type ProjectIdParamsDto = z.infer<typeof ProjectIdParamsSchema>;
+
+export const ProjectTaskParamsSchema = z.object({
+  id: z.uuid(),
+});
+
+export type ProjectTaskParamsDto = z.infer<typeof ProjectTaskParamsSchema>;

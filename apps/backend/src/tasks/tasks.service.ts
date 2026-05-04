@@ -8,7 +8,7 @@ import {
 import { PrismaService } from '@/prisma/prisma.service';
 
 import type * as PrismaType from 'generated/prisma/client';
-import { CreateTaskDto, UpdateTaskDto } from '@myproject/api-types/tasks';
+import { TaskCreateDto, TaskUpdateDto } from '@myproject/api-types/tasks';
 
 @Injectable()
 export class TasksService {
@@ -16,7 +16,7 @@ export class TasksService {
 
   async createTask(
     projectId: string,
-    dto: CreateTaskDto,
+    dto: TaskCreateDto,
   ): Promise<PrismaType.Task> {
     const taskData = dto.task;
 
@@ -48,7 +48,7 @@ export class TasksService {
 
   async updateTask(
     taskId: string,
-    dto: UpdateTaskDto,
+    dto: TaskUpdateDto,
   ): Promise<PrismaType.Task> {
     try {
       const taskData = dto.task;

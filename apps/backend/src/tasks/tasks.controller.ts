@@ -17,8 +17,8 @@ import { TasksService } from './tasks.service';
 import { AuthGuard } from '@/guards/auth.guard';
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
 import {
-  type UpdateTaskDto,
-  UpdateTaskSchema,
+  type TaskUpdateDto,
+  TaskUpdateSchema,
 } from '@myproject/api-types/tasks';
 
 @UseGuards(AuthGuard)
@@ -30,7 +30,7 @@ export class TasksController {
   @Patch(':id')
   updateTask(
     @Param('id') taskId: string,
-    @Body(new ZodValidationPipe(UpdateTaskSchema)) dto: UpdateTaskDto,
+    @Body(new ZodValidationPipe(TaskUpdateSchema)) dto: TaskUpdateDto,
   ) {
     return this.tasksService.updateTask(taskId, dto);
   }

@@ -16,19 +16,18 @@ import { ProjectsService } from '@/projects/projects.service';
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
 import { CurrentUser, type ICurrentUser } from '@/decorators/user.decorator';
 import {
-  UpdateProjectSchema,
-  CreateProjectSchema,
+  type ProjectCreateDto,
+  type ProjectUpdateDto,
+  type ProjectIdParamsDto,
+  ProjectCreateSchema,
+  ProjectIdParamsSchema,
+  ProjectUpdateSchema,
 } from '@myproject/api-types/projects';
 
 import {
-  CreateTaskSchema,
-  type CreateTaskDto,
+  type TaskCreateDto,
+  TaskCreateSchema,
 } from '@myproject/api-types/tasks';
-
-import {
-  type UpdateProjectDto,
-  type CreateProjectDto,
-} from '@myproject/api-types/projects';
 
 @UseGuards(AuthGuard)
 @Controller('projects')
@@ -39,58 +38,66 @@ export class ProjectsController {
   @Get(':id')
   getProject(
     @CurrentUser() user: ICurrentUser,
-    @Param('id') projectId: string,
+    @Param(new ZodValidationPipe(ProjectIdParamsSchema))
+    params: ProjectIdParamsDto,
   ) {
-    const userId = user.userId;
-    return this.projectsService.getProject(userId, projectId);
+    return this.projectsService.getProject(user.id, params.id);
   }
 
   @HttpCode(HttpStatus.OK)
   @Get()
   getAllProjects(@CurrentUser() user: ICurrentUser) {
-    return this.projectsService.getAllProjects(user.userId);
+    return this.projectsService.getAllProjects(user.id);
   }
 
   @HttpCode(HttpStatus.CREATED)
   @Post()
   createProject(
-    @Body(new ZodValidationPipe(CreateProjectSchema)) dto: CreateProjectDto,
     @CurrentUser() user: ICurrentUser,
+    @Body(new ZodValidationPipe(ProjectCreateSchema)) dto: ProjectCreateDto,
   ) {
-    return this.projectsService.createProject(dto, user.userId);
+    return this.projectsService.createProject(dto, user.id);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Patch(':id')
   updateProject(
-    @Param('id') projectId: string,
     @CurrentUser() user: ICurrentUser,
-    @Body(new ZodValidationPipe(UpdateProjectSchema)) dto: UpdateProjectDto,
+    @Body(new ZodValidationPipe(ProjectUpdateSchema)) dto: ProjectUpdateDto,
+    @Param(new ZodValidationPipe(ProjectIdParamsSchema))
+    params: ProjectIdParamsDto,
   ) {
-    return this.projectsService.updateProject(user.userId, projectId, dto);
+    return this.projectsService.updateProject(user.id, params.id, dto);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Delete(':id')
   deleteProject(
     @CurrentUser() user: ICurrentUser,
-    @Param('id') projectId: string,
+    @Param(new ZodValidationPipe(ProjectIdParamsSchema))
+    params: ProjectIdParamsDto,
   ) {
-    return this.projectsService.deleteProject(user.userId, projectId);
+    return this.projectsService.deleteProject(user.id, params.id);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Get(':id/tasks')
-  getProjectTasks(@Param('id') projectId: string) {
-    return this.projectsService.getProjectTasks(projectId);
+  getProjectTasks(
+    @CurrentUser() user: ICurrentUser,
+    @Param(new ZodValidationPipe(ProjectIdParamsSchema))
+    params: ProjectIdParamsDto,
+  ) {
+    return this.projectsService.getProjectTasks(user.id, params.id);
   }
 
   @HttpCode(HttpStatus.CREATED)
   @Post(':id/tasks')
   createProjectTasks(
-    @Param('id') projectId: string,
-    @Body(new ZodValidationPipe(CreateTaskSchema)) dto: CreateTaskDto,
+    @CurrentUser() user: ICurrentUser,
+    @Param(new ZodValidationPipe(ProjectIdParamsSchema))
+    params: ProjectIdParamsDto,
+    @Body(new ZodValidationPipe(TaskCreateSchema)) dto: TaskCreateDto,
   ) {
-    return this.projectsService.createProjectTask(projectId, dto);
+    return this.projectsService.createProjectTask(user.id, params.id, dto);
   }
 }

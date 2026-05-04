@@ -1,7 +1,6 @@
 import {
   Injectable,
   InternalServerErrorException,
-  NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
 
@@ -9,10 +8,11 @@ import { TasksService } from '@/tasks/tasks.service';
 import { PrismaService } from '@/prisma/prisma.service';
 import type * as PrismaType from 'generated/prisma/client';
 import {
-  type CreateProjectDto,
-  type UpdateProjectDto,
+  type ProjectCreateDto,
+  type ProjectUpdateDto,
 } from '@myproject/api-types/projects';
-import { CreateTaskDto } from '@myproject/api-types/tasks';
+import { TaskCreateDto } from '@myproject/api-types/tasks';
+import { isPrismaErrorCode } from '@/prisma/prisma-error';
 
 @Injectable()
 export class ProjectsService {
@@ -21,18 +21,21 @@ export class ProjectsService {
     private tasksService: TasksService,
   ) {}
 
+  private async assertProjectOwner(userId: string, projectId: string) {
+    const project = await this.prismaService.project.findFirst({
+      where: { id: projectId, userId: userId },
+    });
+
+    if (!project) throw new NotFoundException('Project not found');
+    return project;
+  }
+
   async getProject(
     userId: string,
     projectId: string,
   ): Promise<PrismaType.Project> {
     try {
-      const project = await this.prismaService.project.findFirst({
-        where: { id: projectId, userId: userId },
-      });
-
-      if (!project) throw new NotFoundException('Project not found');
-
-      return project;
+      return await this.assertProjectOwner(userId, projectId);
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
       throw new InternalServerErrorException('Failed to fetch Project');
@@ -52,7 +55,7 @@ export class ProjectsService {
   }
 
   async createProject(
-    dto: CreateProjectDto,
+    dto: ProjectCreateDto,
     userId: string,
   ): Promise<PrismaType.Project> {
     try {
@@ -76,7 +79,7 @@ export class ProjectsService {
   async updateProject(
     userId: string,
     projectId: string,
-    dto: UpdateProjectDto,
+    dto: ProjectUpdateDto,
   ): Promise<PrismaType.Project> {
     try {
       const { title, content } = dto.project;
@@ -91,8 +94,10 @@ export class ProjectsService {
 
       return project;
     } catch (error) {
-      if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Failed to fetch Projects');
+      if (isPrismaErrorCode(error, 'P2025')) {
+        throw new NotFoundException('Project not found');
+      }
+      throw new InternalServerErrorException('Failed to update project');
     }
   }
 
@@ -107,13 +112,19 @@ export class ProjectsService {
 
       return project;
     } catch (error) {
-      if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Failed to fetch Projects');
+      if (isPrismaErrorCode(error, 'P2025')) {
+        throw new NotFoundException('Project not found');
+      }
+      throw new InternalServerErrorException('Failed to delete project');
     }
   }
 
-  async getProjectTasks(projectId: string): Promise<PrismaType.Task[]> {
+  async getProjectTasks(
+    userId: string,
+    projectId: string,
+  ): Promise<PrismaType.Task[]> {
     try {
+      await this.assertProjectOwner(userId, projectId);
       const tasks = await this.tasksService.findAll(projectId);
 
       return tasks;
@@ -124,10 +135,13 @@ export class ProjectsService {
   }
 
   async createProjectTask(
+    userId: string,
     projectId: string,
-    dto: CreateTaskDto,
+    dto: TaskCreateDto,
   ): Promise<PrismaType.Task> {
     try {
+      await this.assertProjectOwner(userId, projectId);
+
       return await this.tasksService.createTask(projectId, dto);
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
