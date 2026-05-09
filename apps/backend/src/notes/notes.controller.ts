@@ -39,7 +39,7 @@ export class NotesController {
     @Param('taskId') taskId: string,
     @Body(new ZodValidationPipe(CreateNoteSchema)) dto: CreateNoteDto,
   ) {
-    const userId = user.userId;
+    const userId = user.id;
     return this.notesService.createNote(userId, projectId, taskId, dto);
   }
 }
