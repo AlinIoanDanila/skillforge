@@ -25,7 +25,7 @@ export class CurrentUserGuard implements CanActivate {
       const tokenPayload = await this.jwtService.verifyAsync(token);
 
       req.user = {
-        userId: tokenPayload.sub,
+        id: tokenPayload.sub,
         username: tokenPayload.username,
       };
 

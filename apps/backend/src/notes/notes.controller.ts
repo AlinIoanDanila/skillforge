@@ -1,36 +1,27 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Request,
-  NotImplementedException,
-  UsePipes,
-  UseGuards,
-} from '@nestjs/common';
+import { Get, Post, Body, Param, UseGuards, Controller } from '@nestjs/common';
 
 import { AuthGuard } from '@/guards/auth.guard';
 import { NotesService } from '@/notes/notes.service';
+import { CurrentUser } from '@/decorators/user.decorator';
 import { CreateNoteSchema } from '@myproject/api-types/notes';
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
 
+import type { ICurrentUser } from '@/decorators/user.decorator';
 import type { CreateNoteDto } from '@myproject/api-types/notes';
-import { CurrentUser, type ICurrentUser } from '@/decorators/user.decorator';
 
 @UseGuards(AuthGuard)
 @Controller('projects/:projectId/tasks/:taskId/notes')
 export class NotesController {
   constructor(private notesService: NotesService) {}
 
-  // @Get()
-  // getNotes(
-  //   @Param('projectId') projectId: string,
-  //   @Param('taskId') taskId: string,
-  // ) {
-  //   throw new NotImplementedException();
-  //   return this.notesService.getNotes(taskId);
-  // }
+  @Get()
+  getNotes(
+    @CurrentUser() user: ICurrentUser,
+    @Param('taskId') taskId: string,
+    @Param('projectId') projectId: string,
+  ) {
+    return this.notesService.getNotes(user.id, taskId, projectId);
+  }
 
   @Post()
   createNote(
@@ -39,7 +30,6 @@ export class NotesController {
     @Param('taskId') taskId: string,
     @Body(new ZodValidationPipe(CreateNoteSchema)) dto: CreateNoteDto,
   ) {
-    const userId = user.id;
-    return this.notesService.createNote(userId, projectId, taskId, dto);
+    return this.notesService.createNote(user.id, projectId, taskId, dto);
   }
 }

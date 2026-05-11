@@ -1,25 +1,22 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
   Patch,
   Param,
   Delete,
-  NotImplementedException,
   HttpCode,
-  HttpStatus,
-  Request,
   UseGuards,
+  HttpStatus,
+  Controller,
 } from '@nestjs/common';
 
 import { TasksService } from './tasks.service';
 import { AuthGuard } from '@/guards/auth.guard';
+import { CurrentUser } from '@/decorators/user.decorator';
+import { TaskUpdateSchema } from '@myproject/api-types/tasks';
 import { ZodValidationPipe } from '@/pipes/zod-validation.pipe';
-import {
-  type TaskUpdateDto,
-  TaskUpdateSchema,
-} from '@myproject/api-types/tasks';
+
+import { type ICurrentUser } from '@/decorators/user.decorator';
+import { type TaskUpdateDto } from '@myproject/api-types/tasks';
 
 @UseGuards(AuthGuard)
 @Controller('tasks')
@@ -29,9 +26,16 @@ export class TasksController {
   @HttpCode(HttpStatus.PARTIAL_CONTENT)
   @Patch(':id')
   updateTask(
+    @CurrentUser() user: ICurrentUser,
     @Param('id') taskId: string,
     @Body(new ZodValidationPipe(TaskUpdateSchema)) dto: TaskUpdateDto,
   ) {
-    return this.tasksService.updateTask(taskId, dto);
+    return this.tasksService.updateTask(user.id, taskId, dto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Delete(':id')
+  deleteTask(@CurrentUser() user: ICurrentUser, @Param('id') taskId: string) {
+    return this.tasksService.deleteTask(user.id, taskId);
   }
 }

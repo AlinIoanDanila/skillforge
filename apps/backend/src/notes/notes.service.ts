@@ -1,15 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '@/prisma/prisma.service';
+
 import type { CreateNoteDto } from '@myproject/api-types/notes';
 
 @Injectable()
 export class NotesService {
   constructor(private prismaService: PrismaService) {}
 
-  async getNotes(taskId: string) {
+  async getNotes(userId: string, taskId: string, projectId: string) {
     const notes = await this.prismaService.note.findMany({
-      where: { taskId: taskId },
+      where: {
+        taskId: taskId,
+        task: { projectId: projectId, project: { userId: userId } },
+      },
     });
 
     return notes;

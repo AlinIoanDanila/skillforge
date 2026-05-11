@@ -1,7 +1,6 @@
 import {
   Injectable,
   NotFoundException,
-  NotAcceptableException,
   InternalServerErrorException,
 } from '@nestjs/common';
 
@@ -9,6 +8,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 
 import type * as PrismaType from 'generated/prisma/client';
 import { TaskCreateDto, TaskUpdateDto } from '@myproject/api-types/tasks';
+import { isPrismaErrorCode } from '@/prisma/prisma-error';
 
 @Injectable()
 export class TasksService {
@@ -41,12 +41,15 @@ export class TasksService {
 
       return tasks;
     } catch (error) {
-      if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Failed to fetch Tasks');
+      if (isPrismaErrorCode(error, 'P2025')) {
+        throw new NotFoundException('Task not found');
+      }
+      throw new InternalServerErrorException('Failed to fetch tasks');
     }
   }
 
   async updateTask(
+    userId: string,
     taskId: string,
     dto: TaskUpdateDto,
   ): Promise<PrismaType.Task> {
@@ -56,6 +59,7 @@ export class TasksService {
       const updatedTask = await this.prismaService.task.update({
         where: {
           id: taskId,
+          project: { userId: userId },
         },
         data: {
           title: taskData.title,
@@ -66,8 +70,28 @@ export class TasksService {
 
       return updatedTask;
     } catch (error) {
-      if (error instanceof NotFoundException) throw error;
+      if (isPrismaErrorCode(error, 'P2025')) {
+        throw new NotFoundException('Task not found');
+      }
       throw new InternalServerErrorException('Failed to update task');
+    }
+  }
+
+  async deleteTask(userId: string, taskId: string): Promise<PrismaType.Task> {
+    try {
+      const deletedTask = await this.prismaService.task.delete({
+        where: {
+          id: taskId,
+          project: { userId: userId },
+        },
+      });
+
+      return deletedTask;
+    } catch (error) {
+      if (isPrismaErrorCode(error, 'P2025')) {
+        throw new NotFoundException('Task not found');
+      }
+      throw new InternalServerErrorException('Failed to delete task');
     }
   }
 }
