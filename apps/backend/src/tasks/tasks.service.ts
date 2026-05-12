@@ -8,11 +8,22 @@ import { PrismaService } from '@/prisma/prisma.service';
 
 import type * as PrismaType from 'generated/prisma/client';
 import { TaskCreateDto, TaskUpdateDto } from '@myproject/api-types/tasks';
-import { isPrismaErrorCode } from '@/prisma/prisma-error';
 
 @Injectable()
 export class TasksService {
   constructor(private prismaService: PrismaService) {}
+
+  private async assertTaskOwner(userId: string, taskId: string) {
+    const task = await this.prismaService.task.findFirst({
+      where: {
+        id: taskId,
+        project: { userId },
+      },
+    });
+
+    if (!task) throw new NotFoundException('Task not found');
+    return task;
+  }
 
   async createTask(
     projectId: string,
@@ -41,9 +52,6 @@ export class TasksService {
 
       return tasks;
     } catch (error) {
-      if (isPrismaErrorCode(error, 'P2025')) {
-        throw new NotFoundException('Task not found');
-      }
       throw new InternalServerErrorException('Failed to fetch tasks');
     }
   }
@@ -54,12 +62,13 @@ export class TasksService {
     dto: TaskUpdateDto,
   ): Promise<PrismaType.Task> {
     try {
+      await this.assertTaskOwner(userId, taskId);
+
       const taskData = dto.task;
 
       const updatedTask = await this.prismaService.task.update({
         where: {
           id: taskId,
-          project: { userId: userId },
         },
         data: {
           title: taskData.title,
@@ -70,7 +79,7 @@ export class TasksService {
 
       return updatedTask;
     } catch (error) {
-      if (isPrismaErrorCode(error, 'P2025')) {
+      if (error instanceof NotFoundException) {
         throw new NotFoundException('Task not found');
       }
       throw new InternalServerErrorException('Failed to update task');
@@ -79,16 +88,17 @@ export class TasksService {
 
   async deleteTask(userId: string, taskId: string): Promise<PrismaType.Task> {
     try {
+      await this.assertTaskOwner(userId, taskId);
+
       const deletedTask = await this.prismaService.task.delete({
         where: {
           id: taskId,
-          project: { userId: userId },
         },
       });
 
       return deletedTask;
     } catch (error) {
-      if (isPrismaErrorCode(error, 'P2025')) {
+      if (error instanceof NotFoundException) {
         throw new NotFoundException('Task not found');
       }
       throw new InternalServerErrorException('Failed to delete task');

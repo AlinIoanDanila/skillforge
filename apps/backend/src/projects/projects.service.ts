@@ -12,7 +12,6 @@ import {
   type ProjectUpdateDto,
 } from '@myproject/api-types/projects';
 import { TaskCreateDto } from '@myproject/api-types/tasks';
-import { isPrismaErrorCode } from '@/prisma/prisma-error';
 
 @Injectable()
 export class ProjectsService {
@@ -38,7 +37,9 @@ export class ProjectsService {
       return await this.assertProjectOwner(userId, projectId);
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Failed to fetch Project');
+      throw new InternalServerErrorException(
+        `Failed to fetch project with id ${projectId}`,
+      );
     }
   }
 
@@ -50,7 +51,7 @@ export class ProjectsService {
 
       return projects;
     } catch (error) {
-      throw new InternalServerErrorException('Failed to fetch Projects');
+      throw new InternalServerErrorException('Failed to fetch projects');
     }
   }
 
@@ -72,7 +73,7 @@ export class ProjectsService {
       return newProject;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Failed to fetch Projects');
+      throw new InternalServerErrorException('Failed to create project');
     }
   }
 
@@ -82,22 +83,26 @@ export class ProjectsService {
     dto: ProjectUpdateDto,
   ): Promise<PrismaType.Project> {
     try {
-      const { title, content } = dto.project;
+      await this.assertProjectOwner(userId, projectId);
 
-      const project = await this.prismaService.project.update({
-        where: { id: projectId, userId },
+      const project = dto.project;
+
+      const updatedProject = await this.prismaService.project.update({
+        where: { id: projectId },
         data: {
-          title: title,
-          content: content,
+          title: project.title,
+          content: project.content,
         },
       });
 
-      return project;
+      return updatedProject;
     } catch (error) {
-      if (isPrismaErrorCode(error, 'P2025')) {
+      if (error instanceof NotFoundException) {
         throw new NotFoundException('Project not found');
       }
-      throw new InternalServerErrorException('Failed to update project');
+      throw new InternalServerErrorException(
+        `Failed to update project with id ${projectId}`,
+      );
     }
   }
 
@@ -106,16 +111,20 @@ export class ProjectsService {
     projectId: string,
   ): Promise<PrismaType.Project> {
     try {
+      await this.assertProjectOwner(userId, projectId);
+
       const project = await this.prismaService.project.delete({
-        where: { id: projectId, userId },
+        where: { id: projectId },
       });
 
       return project;
     } catch (error) {
-      if (isPrismaErrorCode(error, 'P2025')) {
+      if (error instanceof NotFoundException) {
         throw new NotFoundException('Project not found');
       }
-      throw new InternalServerErrorException('Failed to delete project');
+      throw new InternalServerErrorException(
+        `Failed to delete project with id ${projectId}`,
+      );
     }
   }
 
@@ -130,7 +139,9 @@ export class ProjectsService {
       return tasks;
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Failed to fetch Projects');
+      throw new InternalServerErrorException(
+        `Failed to fetch tasks from project with id ${projectId}`,
+      );
     }
   }
 
@@ -145,7 +156,9 @@ export class ProjectsService {
       return await this.tasksService.createTask(projectId, dto);
     } catch (error) {
       if (error instanceof NotFoundException) throw error;
-      throw new InternalServerErrorException('Failed to fetch Projects');
+      throw new InternalServerErrorException(
+        `Failed to create task with project id ${projectId}`,
+      );
     }
   }
 }

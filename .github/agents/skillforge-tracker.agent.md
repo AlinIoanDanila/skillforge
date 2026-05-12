@@ -1,7 +1,7 @@
 ---
 name: "SkillForge Tracker"
 description: "Use when: tracking project progress, reviewing what's been built, planning next features, reviewing architecture decisions, getting a senior-level code review, understanding what to implement next in SkillForge, checking roadmap status, or being challenged to think like a senior engineer."
-tools: [read, search, todo, agent, vscode/memory]
+tools: [read, search, todo, edit, agent, vscode/memory]
 argument-hint: "What aspect of the project do you want to review or plan?"
 ---
 

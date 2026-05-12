@@ -14,7 +14,7 @@ export class PrismaService
     });
     super({
       adapter,
-      log: ['error', 'info', 'warn', 'query'],
+      log: ['error', 'warn'],
     });
   }
 

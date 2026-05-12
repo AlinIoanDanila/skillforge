@@ -2,8 +2,6 @@ import * as bcrypt from 'bcrypt';
 import {
   Injectable,
   InternalServerErrorException,
-  MethodNotAllowedException,
-  NotFoundException,
   UnauthorizedException,
   ConflictException,
 } from '@nestjs/common';
