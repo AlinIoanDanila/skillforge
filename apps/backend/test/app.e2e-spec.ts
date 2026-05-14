@@ -87,7 +87,7 @@ describe('Ownership security (e2e)', () => {
   };
 
   const authHeader = (token: string) => ({
-    Authorization: 'Bearer ' + token,
+    Cookie: 'access_token=' + token,
   });
 
   const createProject = async (
