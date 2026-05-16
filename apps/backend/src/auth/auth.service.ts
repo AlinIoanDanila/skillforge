@@ -5,7 +5,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '@/users/users.service';
 
 type AuthInput = {
-  username: string;
+  email: string;
   password: string;
 };
 
@@ -37,7 +37,7 @@ export class AuthService {
   }
 
   async validateUser(input: AuthInput): Promise<SignInData | null> {
-    const user = await this.usersService.findUserByName(input.username);
+    const user = await this.usersService.findUserByEmail(input.email);
 
     if (!user || !user.hashedPassword)
       throw new UnauthorizedException('Incorrect username or password');

@@ -1,4 +1,4 @@
-export async function loginRequest(payload: { username: string; password: string }) {
+export async function loginRequest(payload: { email: string; password: string }) {
   const res = await fetch("http://localhost:3001/auth/login", {
     method: "POST",
     headers: {

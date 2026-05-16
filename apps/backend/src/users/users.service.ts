@@ -16,15 +16,14 @@ type User = PrismaType.User;
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async findUserByName(username: string): Promise<User> {
+  async findUserByEmail(email: string): Promise<User> {
     const user = await this.prisma.user.findFirst({
       where: {
-        name: username,
+        email: email,
       },
     });
 
-    if (!user)
-      throw new UnauthorizedException('Incorrect username or password');
+    if (!user) throw new UnauthorizedException('Incorrect email or password');
 
     return user;
   }
@@ -56,9 +55,7 @@ export class UsersService {
       return user;
     } catch (error: unknown) {
       if (isPrismaErrorCode(error, 'P2002')) {
-        throw new ConflictException(
-          'User with this email or username already exists',
-        );
+        throw new ConflictException('User with this email already exists');
       }
       throw new InternalServerErrorException('Failed to create user');
     }
