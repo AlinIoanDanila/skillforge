@@ -1,26 +1,34 @@
 "use client";
 
-import { MouseEventHandler, SubmitEventHandler, useState } from "react";
-import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { useState, ChangeEvent } from "react";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLogin } from "@/features/auth/hooks";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 
-export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const router = useRouter();
+import { type LoginDto } from "@myproject/api-types/users";
 
+export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
+  const [user, setUser] = useState<LoginDto>({ email: "", password: "" });
+
+  const router = useRouter();
   const { error, loading, login } = useLogin();
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setUser((prev) => ({ ...prev, [event.target.name]: event.target.value }));
+  };
 
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     try {
       e.preventDefault();
-      await login({ email, password });
+      await login({ ...user });
       router.push("/dashboard");
     } catch (error) {
       console.log(error);
@@ -40,11 +48,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="m@example.com"
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
+                  onChange={handleChange}
                   required
                 ></Input>
               </Field>
@@ -55,24 +62,14 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                     Forgot your password?
                   </a>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                  required
-                />
+                <Input id="password" name="password" type="password" onChange={handleChange} required />
               </Field>
               <Field>
                 <Button type="submit" disabled={loading} onClick={handleSubmit}>
                   Login
                 </Button>
-                {/* <Button variant="outline" type="button">
-                  Login with Google
-                </Button> */}
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="#">Sign up</a>
+                  Don&apos;t have an account? <Link href="/register">Sign up</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
@@ -80,7 +77,18 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         </CardContent>
       </Card>
 
-      {error ? <div>error {error}</div> : null}
+      {error ? (
+        <Alert>
+          <AlertTitle>Registration failed</AlertTitle>
+          <AlertDescription>
+            {(Object.keys(error) as Array<keyof typeof error>).map((item) => (
+              <div key={String(item)}>
+                {item} {error[item]}
+              </div>
+            ))}
+          </AlertDescription>
+        </Alert>
+      ) : null}
     </div>
   );
 }
