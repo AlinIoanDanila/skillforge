@@ -69,3 +69,17 @@ export async function registerRequest({ confirmPassword: _, ...payload }: Create
 
   return res.json();
 }
+
+export async function getProjects() {
+  const res = await fetch(`${BASE_URL}/projects`, {
+    method: "GET",
+    headers,
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    await handleResponseError(res);
+  }
+
+  return res.json();
+}

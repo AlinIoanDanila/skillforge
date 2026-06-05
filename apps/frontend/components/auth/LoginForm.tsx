@@ -19,7 +19,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   const [user, setUser] = useState<LoginDto>({ email: "", password: "" });
 
   const router = useRouter();
-  const { error, loading, login } = useLogin();
+  const { error, isLoading, login } = useLogin();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setUser((prev) => ({ ...prev, [event.target.name]: event.target.value }));
@@ -41,6 +41,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         <CardHeader className="flex items-center justify-center">
           <CardTitle>Login</CardTitle>
         </CardHeader>
+
         <CardContent>
           <form>
             <FieldGroup>
@@ -65,7 +66,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 <Input id="password" name="password" type="password" onChange={handleChange} required />
               </Field>
               <Field>
-                <Button type="submit" disabled={loading} onClick={handleSubmit}>
+                <Button type="submit" disabled={isLoading} onClick={handleSubmit}>
                   Login
                 </Button>
                 <FieldDescription className="text-center">

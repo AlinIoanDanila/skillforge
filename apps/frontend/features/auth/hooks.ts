@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { loginRequest, registerRequest } from "@/features/auth/api";
+import { getProjects, loginRequest, registerRequest } from "@/features/auth/api";
 import type { AuthErrorMap } from "@/features/auth/api";
 
 const normalizeError = (error: unknown): AuthErrorMap => {
@@ -14,31 +14,31 @@ const normalizeError = (error: unknown): AuthErrorMap => {
 };
 
 export const useLogin = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<AuthErrorMap | null>(null);
 
   async function login(payload: { email: string; password: string }) {
     try {
-      setLoading(true);
+      setIsLoading(true);
       setError(null);
       await loginRequest(payload);
     } catch (error: unknown) {
       setError(normalizeError(error));
       throw error;
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
   return {
     login,
-    loading,
+    isLoading,
     error,
   };
 };
 
 export const useRegister = () => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<AuthErrorMap | null>(null);
 
   async function register(payload: {
@@ -49,20 +49,46 @@ export const useRegister = () => {
     type: "Admin" | "User";
   }) {
     try {
-      setLoading(true);
+      setIsLoading(true);
       setError(null);
       await registerRequest(payload);
     } catch (error: unknown) {
       setError(normalizeError(error));
       throw error;
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   }
 
   return {
     register,
-    loading,
+    isLoading,
+    error,
+  };
+};
+
+export const useProjects = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<AuthErrorMap | null>(null);
+  const [projects, setProjects] = useState([]);
+
+  async function get() {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const projects = await getProjects();
+      setProjects(projects);
+    } catch (error: unknown) {
+      setError(normalizeError(error));
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return {
+    projects,
+    isLoading,
     error,
   };
 };

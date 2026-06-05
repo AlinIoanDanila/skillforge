@@ -24,7 +24,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
     type: "User",
   });
   const router = useRouter();
-  const { error, loading, register } = useRegister();
+  const { error, isLoading, register } = useRegister();
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setUser((prev) => ({ ...prev, [event.target.name]: event.target.value }));
@@ -89,7 +89,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
               </Field>
 
               <Field>
-                <Button disabled={loading} onClick={handleSubmit}>
+                <Button disabled={isLoading} onClick={handleSubmit}>
                   Create Account
                 </Button>
                 <FieldDescription className="text-center">
