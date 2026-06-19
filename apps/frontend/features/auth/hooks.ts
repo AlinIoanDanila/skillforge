@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { getProjects, loginRequest, registerRequest } from "@/features/auth/api";
+
 import type { AuthErrorMap } from "@/features/auth/api";
+import type { ProjectDto } from "@myproject/api-types/projects";
 
 const normalizeError = (error: unknown): AuthErrorMap => {
   if (error instanceof Error && error.cause && typeof error.cause === "object") {
@@ -70,21 +72,24 @@ export const useRegister = () => {
 export const useProjects = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<AuthErrorMap | null>(null);
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState<ProjectDto[]>([]);
 
-  async function get() {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const projects = await getProjects();
-      setProjects(projects);
-    } catch (error: unknown) {
-      setError(normalizeError(error));
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  useEffect(() => {
+    const get = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        await getProjects().then((data) => setProjects(data));
+      } catch (error: unknown) {
+        setError(normalizeError(error));
+        throw error;
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    get();
+  }, []);
 
   return {
     projects,

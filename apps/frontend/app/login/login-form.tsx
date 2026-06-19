@@ -2,8 +2,9 @@
 
 import { ChangeEvent, useState } from "react";
 
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Link, Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -98,7 +99,7 @@ export function LoginForm() {
 
       {/* Register Link */}
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        {"Don't have an account? "}
+        Don't have an account?{" "}
         <Link href="/register" className="font-medium text-foreground underline-offset-4 hover:underline">
           Create account
         </Link>

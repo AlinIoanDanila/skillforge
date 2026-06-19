@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+export const Project = z.object({
+  id: z.uuid(),
+  title: z.string(),
+  content: z.string(),
+  createdAt: z.iso.datetime(),
+  updatedAt: z.iso.datetime(),
+});
+
+export type ProjectDto = z.infer<typeof Project>;
+
 export const ProjectCreateSchema = z.object({
   project: z.object({
     title: z.string().trim().min(1).max(100),

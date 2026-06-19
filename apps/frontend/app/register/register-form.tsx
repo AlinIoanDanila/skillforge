@@ -1,13 +1,17 @@
 "use client";
 
 import { ChangeEvent, useState } from "react";
+
+import Link from "next/link";
+import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Link, Loader2 } from "lucide-react";
 import { useRegister } from "@/features/auth/hooks";
+import { Card, CardContent } from "@/components/ui/card";
 import { CreateUserDto } from "@myproject/api-types/users";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 export function RegisterForm({ className, ...props }: React.ComponentProps<"div">) {
   const [user, setUser] = useState<CreateUserDto>({
@@ -142,6 +146,19 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
           Sign in
         </Link>
       </p>
+
+      {error ? (
+        <Alert>
+          <AlertTitle>Registration failed</AlertTitle>
+          <AlertDescription>
+            {(Object.keys(error) as Array<keyof typeof error>).map((item) => (
+              <div key={String(item)}>
+                {item} {error[item]}
+              </div>
+            ))}
+          </AlertDescription>
+        </Alert>
+      ) : null}
     </>
   );
 }
