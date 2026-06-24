@@ -1,11 +1,15 @@
 "use client";
 
 import Link from "next/link";
+
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, FolderKanban, CheckSquare, BookOpen, Settings, User, LogOut } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useLogout } from "@/features/auth/hooks";
+import { useRouter } from "next/navigation";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -21,6 +25,17 @@ const secondaryNav = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { logout, isLoading, error } = useLogout();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <aside className="flex h-screen w-64 flex-col border-r border-border bg-sidebar">
@@ -86,15 +101,14 @@ export function Sidebar() {
             );
           })}
 
-          <li>
-            <Link
-              href="/login"
-              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            >
-              <LogOut className="size-4" />
-              Sign Out
-            </Link>
-          </li>
+          <Button
+            disabled={isLoading}
+            onClick={handleLogout}
+            className="bg-transparent px-3 justify-start cursor-pointer text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          >
+            <LogOut className="size-4" />
+            Sign Out
+          </Button>
         </ul>
       </nav>
     </aside>

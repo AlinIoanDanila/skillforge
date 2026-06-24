@@ -1,5 +1,4 @@
 "use client";
-
 import { ChangeEvent, useState } from "react";
 
 import Link from "next/link";
@@ -83,7 +82,7 @@ export function LoginForm() {
               />
             </div>
 
-            <Button type="submit" className="mt-2 w-full" onClick={handleSubmit} disabled={isLoading}>
+            <Button type="button" className="mt-2 w-full" onClick={handleSubmit} disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 data-icon="inline-start" className="animate-spin" />
@@ -107,7 +106,7 @@ export function LoginForm() {
 
       {error ? (
         <Alert>
-          <AlertTitle>Registration failed</AlertTitle>
+          <AlertTitle>Sign in failed</AlertTitle>
           <AlertDescription>
             {(Object.keys(error) as Array<keyof typeof error>).map((item) => (
               <div key={String(item)}>

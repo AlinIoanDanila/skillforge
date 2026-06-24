@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-import { getProjects, loginRequest, registerRequest } from "@/features/auth/api";
+import { getProjects, loginRequest, logoutRequest, registerRequest } from "@/features/auth/api";
 
 import type { AuthErrorMap } from "@/features/auth/api";
 import type { ProjectDto } from "@myproject/api-types/projects";
@@ -34,6 +34,30 @@ export const useLogin = () => {
 
   return {
     login,
+    isLoading,
+    error,
+  };
+};
+
+export const useLogout = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<AuthErrorMap | null>(null);
+
+  async function logout() {
+    try {
+      setIsLoading(true);
+      setError(null);
+      await logoutRequest();
+    } catch (error: unknown) {
+      setError(normalizeError(error));
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  return {
+    logout,
     isLoading,
     error,
   };
@@ -79,7 +103,8 @@ export const useProjects = () => {
       try {
         setIsLoading(true);
         setError(null);
-        await getProjects().then((data) => setProjects(data));
+        const data = await getProjects();
+        setProjects(data);
       } catch (error: unknown) {
         setError(normalizeError(error));
         throw error;

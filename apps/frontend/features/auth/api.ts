@@ -56,6 +56,20 @@ export async function loginRequest(payload: { email: string; password: string })
   return res.json();
 }
 
+export async function logoutRequest() {
+  const res = await fetch(`${BASE_URL}/auth/logout`, {
+    method: "POST",
+    headers,
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    await handleResponseError(res);
+  }
+
+  return res.json();
+}
+
 export async function registerRequest({ confirmPassword: _, ...payload }: CreateUserDto) {
   const res = await fetch(`${BASE_URL}/auth/register`, {
     method: "POST",
