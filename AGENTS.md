@@ -1,69 +1,85 @@
 # AGENTS.md
 
-## Project Context
+## Project
 
-SkillForge is a fullstack learning/project tracking platform built with:
+SkillForge is a learning and productivity platform for developers and self-learners.
 
-- Next.js App Router
+The application allows users to organize learning goals into projects, projects into tasks, and tasks into notes. The long-term goal is to evolve SkillForge into a production-style fullstack application that demonstrates modern web development, backend architecture, testing, DevOps, cloud, AI/LLM integration, and mobile development.
+
+This is also a learning project. The developer should understand the architecture and implementation rather than blindly accepting generated code.
+
+---
+
+## Core Development Philosophy
+
+SkillForge should evolve progressively.
+
+Do not introduce advanced architecture, infrastructure, or dependencies unless they solve an actual problem or are part of an intentional learning phase.
+
+Prefer:
+
+- Simple implementations first
+- Clear separation of concerns
+- Explicit architectural decisions
+- Strong TypeScript typing
+- Small incremental changes
+- Testable code
+- Documented decisions
+
+Avoid premature optimization and over-engineering.
+
+---
+
+## Technology Stack
+
+### Frontend
+
+- Next.js
+- React
+- TypeScript
+- App Router
+- Tailwind CSS
+- Zod
+- React Hook Form where appropriate
+- shadcn/ui where appropriate
+
+### Backend
+
+- Node.js
 - NestJS
+- TypeScript
 - Prisma
 - PostgreSQL
-- TypeScript
+- Zod for validation
 
-The project follows a modular monolith architecture.
+### Planned technologies
 
----
-
-## Project Philosophy
-
-The focus of the project is to take a developer from mid level mindset to senior mindset, following best practices, both in clean code and architecture. It's important to focus on the "why", to keep answers simple, to give real-life examples and to challenge the developer from time to time.
-
----
-
-## Frontend Rules
-
-- Use App Router
-- Keep route files thin
-- Business logic belongs in `features/`
-- Reusable UI belongs in `components/`
-- Prefer Server Components unless interactivity is needed
+- MongoDB
+- GraphQL
+- Docker
+- GitHub Actions / CI
+- Cloud deployment
+- React Native + Expo
+- AI/LLM integration
+- Vector search / RAG if justified later
 
 ---
 
-## Backend Rules
+## Architecture
 
-- Controllers handle HTTP only
-- Services contain business logic
-- Use Zod for validation
-- Avoid leaking Prisma models directly to API responses
+The project currently follows a modular monolith approach.
 
----
+The repository contains multiple applications but uses a single Git repository.
 
-## Authentication
+Expected high-level structure:
 
-- JWT with httpOnly cookies
-- NestJS owns authentication
-- Frontend consumes authenticated session
-
----
-
-## Testing
-
-- Jest + Supertest
-- Focus on business-critical flows
-
----
-
-## AI Usage Philosophy
-
-AI tools may assist with:
-
-- debugging
-- boilerplate
-- test generation
-
-Avoid relying on AI for:
-
-- architecture decisions
-- schema design
-- security understanding
+```text
+skillforge/
+├── AGENTS.md
+├── README.md
+├── docs/
+├── backend/
+├── frontend/
+├── mobile/
+└── packages/
+```

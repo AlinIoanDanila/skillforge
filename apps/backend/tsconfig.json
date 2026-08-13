@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    // "ignoreDeprecations": "6.0",
     "module": "Node16",
     "moduleResolution": "node16",
     "esModuleInterop": true,
@@ -11,6 +10,7 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2023",
+    "ignoreDeprecations": "6.0",
     "sourceMap": true,
     "types": ["node", "jest"],
     "outDir": "./dist",
