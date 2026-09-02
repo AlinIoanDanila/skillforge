@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "run:back": "pnpm -F backend dev",
+    "run:front": "pnpm -F frontend dev"
+  }
+}

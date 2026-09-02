@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '@/app.module';
+import { uuid } from 'zod';
 
 type RegisteredUser = {
   id: string;
@@ -48,6 +49,7 @@ describe('Ownership security (e2e)', () => {
         name,
         email,
         password,
+        confirmPassword: password,
         type: 'User',
       })
       .expect(201);
@@ -61,12 +63,12 @@ describe('Ownership security (e2e)', () => {
   };
 
   const loginAndGetAccessToken = async (
-    username: string,
+    email: string,
     password: string,
   ): Promise<string> => {
     const response = await request(app.getHttpServer())
       .post('/auth/login')
-      .send({ username, password })
+      .send({ email, password })
       .expect(200);
 
     const setCookieHeader = response.headers['set-cookie'];
@@ -149,8 +151,8 @@ describe('Ownership security (e2e)', () => {
     const userA = await registerUser('userA1');
     const userB = await registerUser('userB1');
 
-    const tokenA = await loginAndGetAccessToken(userA.name, userA.password);
-    const tokenB = await loginAndGetAccessToken(userB.name, userB.password);
+    const tokenA = await loginAndGetAccessToken(userA.email, userA.password);
+    const tokenB = await loginAndGetAccessToken(userB.email, userB.password);
 
     const projectB = await createProject(tokenB, uniqueSuffix());
     const taskB = await createTask(tokenB, projectB.id, uniqueSuffix());
@@ -170,7 +172,7 @@ describe('Ownership security (e2e)', () => {
 
   it('2) owner can update own task', async () => {
     const owner = await registerUser('owner2');
-    const token = await loginAndGetAccessToken(owner.name, owner.password);
+    const token = await loginAndGetAccessToken(owner.email, owner.password);
 
     const project = await createProject(token, uniqueSuffix());
     const task = await createTask(token, project.id, uniqueSuffix());
@@ -193,8 +195,8 @@ describe('Ownership security (e2e)', () => {
     const userA = await registerUser('userA3');
     const userB = await registerUser('userB3');
 
-    const tokenA = await loginAndGetAccessToken(userA.name, userA.password);
-    const tokenB = await loginAndGetAccessToken(userB.name, userB.password);
+    const tokenA = await loginAndGetAccessToken(userA.email, userA.password);
+    const tokenB = await loginAndGetAccessToken(userB.email, userB.password);
 
     const projectB = await createProject(tokenB, uniqueSuffix());
     const taskB = await createTask(tokenB, projectB.id, uniqueSuffix());
@@ -210,7 +212,7 @@ describe('Ownership security (e2e)', () => {
 
   it('4) owner can read own notes', async () => {
     const owner = await registerUser('owner4');
-    const token = await loginAndGetAccessToken(owner.name, owner.password);
+    const token = await loginAndGetAccessToken(owner.email, owner.password);
 
     const project = await createProject(token, uniqueSuffix());
     const task = await createTask(token, project.id, uniqueSuffix());
@@ -229,8 +231,8 @@ describe('Ownership security (e2e)', () => {
     const userA = await registerUser('userA5');
     const userB = await registerUser('userB5');
 
-    const tokenA = await loginAndGetAccessToken(userA.name, userA.password);
-    const tokenB = await loginAndGetAccessToken(userB.name, userB.password);
+    const tokenA = await loginAndGetAccessToken(userA.email, userA.password);
+    const tokenB = await loginAndGetAccessToken(userB.email, userB.password);
 
     const projectB = await createProject(tokenB, uniqueSuffix());
 
@@ -244,7 +246,7 @@ describe('Ownership security (e2e)', () => {
 
   it('6) owner can delete own project', async () => {
     const owner = await registerUser('owner6');
-    const token = await loginAndGetAccessToken(owner.name, owner.password);
+    const token = await loginAndGetAccessToken(owner.email, owner.password);
 
     const project = await createProject(token, uniqueSuffix());
 
