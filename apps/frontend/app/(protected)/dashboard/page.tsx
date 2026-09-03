@@ -1,13 +1,13 @@
 "use client";
 
 import StatsCards from "@/components/stats-cards";
+import { useUser } from "@/features/auth/user-context";
 import { UpcomingTasks } from "@/components/dashboard/upcoming-tasks";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
-import { useCurrentUser } from "@/features/auth/hooks";
 
 export default function DashboardPage() {
-  const { user } = useCurrentUser();
+  const user = useUser();
 
   return (
     <DashboardLayout title="Dashboard">

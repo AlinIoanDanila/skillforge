@@ -3,10 +3,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/features/auth/hooks";
+import { UserProvider } from "@/features/auth/user-context";
 
 export default function ProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { isLoading, isAuthenticated } = useCurrentUser();
+  const { isLoading, isAuthenticated, user } = useCurrentUser();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -18,9 +19,9 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
     return <p>Checking session...</p>;
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !user) {
     return null;
   }
 
-  return <>{children}</>;
+  return <UserProvider user={user}>{children}</UserProvider>;
 }
