@@ -7,6 +7,11 @@ const headers = {
 
 export type AuthErrorMap = Record<string, string>;
 
+export type CurrentUser = {
+  id: string;
+  name: string;
+};
+
 const handleResponseError = async (res: Response): Promise<never> => {
   const rawError = await res.text();
   const fallbackMessage = rawError || res.statusText || "Request failed";
@@ -41,6 +46,20 @@ const handleResponseError = async (res: Response): Promise<never> => {
   throw new Error("Auth request failed", { cause: errorInfo });
 };
 
+export async function getCurrentUser(): Promise<CurrentUser> {
+  const res = await fetch(`${BASE_URL}/auth/me`, {
+    method: "GET",
+    headers,
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    await handleResponseError(res);
+  }
+
+  return res.json();
+}
+
 export async function loginRequest(payload: { email: string; password: string }) {
   const res = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",
@@ -70,7 +89,7 @@ export async function logoutRequest() {
   return res.json();
 }
 
-export async function registerRequest({ confirmPassword: _, ...payload }: CreateUserDto) {
+export async function registerRequest(payload: CreateUserDto) {
   const res = await fetch(`${BASE_URL}/auth/register`, {
     method: "POST",
     headers,

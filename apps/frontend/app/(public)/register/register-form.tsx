@@ -28,9 +28,14 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
     setUser((prev) => ({ ...prev, [event.target.name]: event.target.value }));
   };
 
-  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     try {
       e.preventDefault();
+
+      if (user.password !== user.confirmPassword) {
+        throw new Error("Error");
+      }
+
       await register({ ...user });
       router.push("/login");
     } catch (error) {
@@ -52,7 +57,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
       {/* Register Form */}
       <Card className="border-border">
         <CardContent className="pt-6">
-          <form className="flex flex-col gap-4">
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
             <div className="flex flex-col gap-2">
               <label htmlFor="name" className="text-sm font-medium text-foreground">
                 Full name
@@ -63,8 +68,8 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
                 type="text"
                 placeholder="Alex Johnson"
                 onChange={handleChange}
-                required
                 disabled={isLoading}
+                required
               />
             </div>
 
@@ -78,8 +83,8 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
                 name="email"
                 placeholder="alex@example.com"
                 onChange={handleChange}
-                required
                 disabled={isLoading}
+                required
               />
             </div>
 
@@ -93,8 +98,8 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
                 type="password"
                 placeholder="Create a password"
                 onChange={handleChange}
-                required
                 disabled={isLoading}
+                required
               />
               <p className="text-xs text-muted-foreground">Must be at least 8 characters</p>
             </div>
@@ -104,13 +109,13 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
                 Confirm password
               </label>
               <Input
-                id="confirm-password"
-                name="confirm-password"
+                id="confirmPassword"
+                name="confirmPassword"
                 type="password"
                 placeholder="Confirm your password"
                 onChange={handleChange}
-                required
                 disabled={isLoading}
+                required
               />
             </div>
 

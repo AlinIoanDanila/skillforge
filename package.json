@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "dev": "pnpm --parallel --filter frontend --filter backend run dev",
     "run:back": "pnpm -F backend dev",
     "run:front": "pnpm -F frontend dev"
   }

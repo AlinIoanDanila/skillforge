@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-import { getProjects, loginRequest, logoutRequest, registerRequest } from "@/features/auth/api";
+import { getCurrentUser, getProjects, loginRequest, logoutRequest, registerRequest } from "@/features/auth/api";
 
-import type { AuthErrorMap } from "@/features/auth/api";
+import type { AuthErrorMap, CurrentUser } from "@/features/auth/api";
 import type { ProjectDto } from "@myproject/api-types/projects";
 
 const normalizeError = (error: unknown): AuthErrorMap => {
@@ -63,6 +63,36 @@ export const useLogout = () => {
   };
 };
 
+export const useCurrentUser = () => {
+  const [user, setUser] = useState<CurrentUser | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  useEffect(() => {
+    const verifySession = async () => {
+      try {
+        const currentUser = await getCurrentUser();
+
+        setUser(currentUser);
+        setIsAuthenticated(true);
+      } catch (error) {
+        setUser(null);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    void verifySession();
+  }, []);
+
+  return {
+    user,
+    isLoading,
+    isAuthenticated,
+  };
+};
+
 export const useRegister = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<AuthErrorMap | null>(null);
@@ -75,6 +105,8 @@ export const useRegister = () => {
     type: "Admin" | "User";
   }) {
     try {
+      console.log(payload);
+
       setIsLoading(true);
       setError(null);
       await registerRequest(payload);

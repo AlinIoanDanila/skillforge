@@ -1,11 +1,10 @@
-import Link from "next/link";
-import { RegisterForm } from "@/app/register/register-form";
+import { LoginForm } from "./login-form";
 
-export default function RegisterPage() {
+export default function LoginPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
-        <RegisterForm />
+        <LoginForm />
       </div>
     </div>
   );
